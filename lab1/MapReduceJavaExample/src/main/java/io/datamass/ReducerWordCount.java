@@ -5,18 +5,31 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class ReducerWordCount extends Reducer<Text, IntWritable, Text, IntWritable>
+public class ReducerWordCount extends Reducer<IntWritable, Text, IntWritable, Text>
 {
-    public void reduce(Text word, Iterable<IntWritable> values, Context con) throws IOException, InterruptedException
+    public void reduce(IntWritable column, Iterable<Text> values, Context con) throws IOException, InterruptedException
     {
-        int sum = 0;
-        for(IntWritable value : values)
+        Map<Text, Integer> map = new HashMap<Text, Integer>();
+        int counter = 0;
+        for (Text word : values)
         {
-            sum += value.get();
+            int count = map.containsKey(word) ? map.get(word) : 0;
+            map.put(new Text(word), count + 1);
+            counter++;
+
         }
-        con.write(word, new IntWritable(sum));
+        for (Map.Entry<Text, Integer> entry : map.entrySet()) {
+            String out = String.format("WORD: %s  COUNT: %s [%.2f %%]",
+                    entry.getKey().toString(),
+                    entry.getValue().toString(),
+                    entry.getValue() * 100F / counter);
+            con.write(column, new Text(out));
+        }
+
     }
 }
 

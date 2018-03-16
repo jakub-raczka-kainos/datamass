@@ -1,0 +1,3 @@
+io/datamass/MapWordCount.class
+io/datamass/ReducerWordCount.class
+io/datamass/Driver.class

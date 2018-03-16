@@ -18,14 +18,15 @@ public class Driver {
         String[] files=new GenericOptionsParser(c,args).getRemainingArgs();
         Path input=new Path(files[0]);
         Path output=new Path(files[1]);
-        Job job=new Job(c,"WordCountExample");
+        int reducers = Integer.parseInt(args[2]);
+        Job job=new Job(c,"LAB1 - Jakub Rączka - reducers no. " + reducers);
 
         job.setJarByClass(Driver.class);
         job.setMapperClass(MapWordCount.class);
         job.setReducerClass(ReducerWordCount.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        //job.setNumReduceTasks(2);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
+        job.setNumReduceTasks(reducers);
 
         FileInputFormat.addInputPath(job, input);
         FileOutputFormat.setOutputPath(job, output);
